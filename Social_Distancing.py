@@ -135,7 +135,7 @@ MIN_DISTANCE = 100
 
 # loop over the frames from the video stream
 while True:
-    #Block1
+	#Block1
 	# read the next frame from the file
 	(grabbed, frame) = vs.read()
 
