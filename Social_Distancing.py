@@ -35,13 +35,13 @@ NMS_THRESH = 0.3
 
 
 def detect_people(frame, net, ln, personIdx=0):
-    #Block1
+        #Block1
 	# grab the dimensions of the frame and  initialize the list of
 	# results
 	(H, W) = frame.shape[:2]
 	results = []
 
-    #Block2
+        #Block2
 	# construct a blob from the input frame and then perform a forward
 	# pass of the YOLO object detector, giving us our bounding boxes
 	# and associated probabilities
@@ -49,14 +49,14 @@ def detect_people(frame, net, ln, personIdx=0):
 	net.setInput(blob)
 	layerOutputs = net.forward(ln)
 
-    #Block3
+        #Block3
 	# initialize our lists of detected bounding boxes, centroids, and
 	# confidences, respectively
 	boxes = []
 	centroids = []
 	confidences = []
 
-    #Block4
+        #Block4
 	# loop over each of the layer outputs
 	for output in layerOutputs:
 		# loop over each of the detections
@@ -67,7 +67,7 @@ def detect_people(frame, net, ln, personIdx=0):
 			classID = np.argmax(scores)
 			confidence = scores[classID]
 
-            #Block5
+                        #Block5
 			# filter detections by (1) ensuring that the object
 			# detected was a person and (2) that the minimum
 			# confidence is met
@@ -80,7 +80,7 @@ def detect_people(frame, net, ln, personIdx=0):
 				box = detection[0:4] * np.array([W, H, W, H])
 				(centerX, centerY, width, height) = box.astype("int")
 
-                #Block6
+                                #Block6
 				# use the center (x, y)-coordinates to derive the top
 				# and and left corner of the bounding box
 				x = int(centerX - (width / 2))
@@ -92,12 +92,12 @@ def detect_people(frame, net, ln, personIdx=0):
 				centroids.append((centerX, centerY))
 				confidences.append(float(confidence))
 
-    #Block7
+        #Block7
 	# apply non-maxima suppression to suppress weak, overlapping
 	# bounding boxes
 	idxs = cv2.dnn.NMSBoxes(boxes, confidences, MIN_CONF, NMS_THRESH)
 
-    #Block8
+        #Block8
 	# ensure at least one detection exists
 	if len(idxs) > 0:
 		# loop over the indexes we are keeping
@@ -144,7 +144,7 @@ while True:
 	if not grabbed:
 		break
 
-    #Block2
+        #Block2
 	# resize the frame and then detect people (and only people) in it
 	frame = imutils.resize(frame, width=700)
 	results = detect_people(frame, net, ln,personIdx=LABELS.index("person"))
@@ -153,7 +153,7 @@ while True:
 	# distance
 	violate = set()
 
-    #Block3
+        #Block3
 	# ensure there are *at least* two people detections (required in
 	# order to compute our pairwise distance maps)
 	if len(results) >= 2:
@@ -162,7 +162,7 @@ while True:
 		centroids = np.array([r[2] for r in results])
 		D = dist.cdist(centroids, centroids, metric="euclidean")
 
-        #Block4
+                #Block4
 		# loop over the upper triangular of the distance matrix
 		for i in range(0, D.shape[0]):
 			for j in range(i + 1, D.shape[1]):
@@ -175,7 +175,7 @@ while True:
 					violate.add(i)
 					violate.add(j)
 
-    #Block5
+        #Block5
 	# loop over the results
 	for (i, (prob, bbox, centroid)) in enumerate(results):
 		# extract the bounding box and centroid coordinates, then
@@ -184,7 +184,7 @@ while True:
 		(cX, cY) = centroid
 		color = (0, 255, 0)
 
-        #Block6
+                #Block6
 		# if the index pair exists within the violation set, then
 		# update the color
 		if i in violate:
@@ -194,13 +194,13 @@ while True:
 		# centroid coordinates of the person,
 		cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
 
-    #Block7
+        #Block7
 	# draw the total number of social distancing violations on the
 	# output frame
 	text = "Social Distancing Violations: {}".format(len(violate))
 	cv2.putText(frame, text, (10, frame.shape[0] - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
 
-    #Block8
+        #Block8
 	# check to see if the output frame should be displayed to our
 	# screen
 	if display > 0:
